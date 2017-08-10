@@ -1,3 +1,6 @@
+#Andrew Sager
+#8/10/2017
+#not the main file, run completeparse.py
 import csv #import .csv manipulation libraries
 
 def simplify(A):
@@ -58,4 +61,4 @@ def get_farms():
 	for farm in B:
 		if (3 < len(farm[2])): #FIXME: right now, we ignore singular or linear coordinates given to us by the farmers
 			C.append(farm) #they must form a polygon! so four or more points (since start pt = end pt)
-	return C
+	return C #return sorted data to completeparse.py
