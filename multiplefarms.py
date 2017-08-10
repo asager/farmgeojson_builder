@@ -1,3 +1,6 @@
+#Andrew Sager
+#8/10/2017
+#not the main file, run completeparse.py
 import csv #import .csv manipulation libraries
 
 def simplify(A):
@@ -29,7 +32,7 @@ def format_coords(s):
 	return B
 
 def get_farms():
-	smtfarmconf = "SMT_Farm_ID_{0}"
+	smtfarmconf = "SMT_Farm_ID_{0}" #{0} is formatting for each of the five farm columns
 	farmloopconf = "FarmLoop_Farm{0}_GeoLocationFinal"
 	A = []
 	with open('AFF1601MF_GeoData.csv') as f:
@@ -37,23 +40,24 @@ def get_farms():
 		r = False
 		for row in reader:
 			if (not r):
-				r = True
-				assert(row[1] == "SMT_ID")
-				for i in range(5):
-					try:
-						assert(row[2+3*i] == smtfarmconf.format(i+1))
-						assert(row[4+3*i] == farmloopconf.format(i+1))
-					except AssertionError:
-						print("Error with formatting of AFF1601MF_GeoData.csv")
-			else:
-				SMT_ID = row[1]
+				r = True #flip bit to signify whether we are in the first row
+				try:
+					assert(row[1] == "SMT_ID") #need to have the document formatted a certain way
+					for i in range(5):
+						assert(row[2+3*i] == smtfarmconf.format(i+1)) #assert that 3rd column is "SMT_Farm_ID_1", 6th column is "SMT_Farm_ID_2", etc.
+						assert(row[4+3*i] == farmloopconf.format(i+1)) #assert that 4th column, 7th column....
+				except AssertionError:
+					print("Error with formatting of AFF1601MF_GeoData.csv") #the file isnt in the right format
+			else: #if we're not in the first row, grab the farmer id and all of the farm and geo data
+				SMT_ID = row[1] 
 				for i in range(5):
 					farmidx = row[2+3*i].strip()
 					geolocationx = row[4+3*i].strip()
-					if (farmidx == "" or geolocationx == ""):
+					if (farmidx == "" or geolocationx == ""): #will stop if no geolocation exists, could cause problems if geolocations exist afterwards
 						break
 					else:
 						A.append([SMT_ID,farmidx,geolocationx])
+	#perform the same operations as for single farms...
 	B = []
 	for i in range(len(A)):
 		split_pipes(A,B,i) #split up the seperate plots of land the farmers gave us, delimited by pipes
@@ -65,4 +69,4 @@ def get_farms():
 	for farm in B:
 		if (3 < len(farm[2])): #FIXME: right now, we ignore singular or linear coordinates given to us by the farmers
 			C.append(farm) #they must form a polygon! so four or more points (since start pt = end pt)
-	return C
+	return C #return it to the completeparse.py file
